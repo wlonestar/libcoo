@@ -129,16 +129,16 @@ void test_foo_stack(foo_stack *stk) {
 }
 
 int main() {
-  CREATE_STACK(int_stack, int, stk1)
+  CREATE_STACK(int_stack, stk1)
   stk1->print = int_stack_print;
 
-  CREATE_STACK(float_stack, float, stk2)
+  CREATE_STACK(float_stack, stk2)
   stk2->print = float_stack_print;
   
-  CREATE_STACK(string_stack, char *, stk3)
+  CREATE_STACK(string_stack, stk3)
   stk3->print = string_stack_print;
   
-  CREATE_STACK(foo_stack, foo, stk4)
+  CREATE_STACK(foo_stack, stk4)
   stk4->print = foo_stack_print;
 
   test_int_stack(stk1);

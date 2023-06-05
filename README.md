@@ -39,10 +39,10 @@ DECLARE_STACK(struct_name, value_type)
 
 3. Create an instance of the object
 
-Use macro `CREATE_STACK` to create a struct pointer `obj_name` of struct `struct_name` with the type of `value_type`.
+Use macro `CREATE_STACK` to create a struct pointer `obj_name` of struct `struct_name`.
 
 ```c
-CREATE_STACK(struct_name, value_type, obj_name)
+CREATE_STACK(struct_name, obj_name)
 ```
 
 4. Use method in project
@@ -81,7 +81,7 @@ void test_int_stack(int_stack *stk) {
 
 int main() {
   // create an instance of int_stack
-  CREATE_STACK(int_stack, int, stk)
+  CREATE_STACK(int_stack, stk)
   // override print method
   stk->print = int_stack_print;
   test_int_stack(stk);
@@ -95,10 +95,10 @@ int main() {
 In the container inner, I use function pointer to define method, so you can override them if necessary.
 
 ```c
-value_type (*top)(struct struct_name* self);
-bool (*empty)(struct struct_name* self);
-size_t (*size)(struct struct_name* self);
-void (*push)(struct struct_name* self, value_type value);
-void (*pop)(struct struct_name* self);
-void (*print)(struct struct_name* self);
+value_type  (*top)(struct struct_name* self);
+bool        (*empty)(struct struct_name* self);
+size_t      (*size)(struct struct_name* self);
+void        (*push)(struct struct_name* self, value_type value);
+void        (*pop)(struct struct_name* self);
+void        (*print)(struct struct_name* self);
 ```

@@ -1,0 +1,17 @@
+{
+  "files.associations": {
+    "*.h": "cpp",
+    "array": "c",
+    "atomic": "c",
+    "deque": "c",
+    "string": "c",
+    "unordered_map": "c",
+    "vector": "c",
+    "iterator": "c",
+    "memory_resource": "c",
+    "string_view": "c",
+    "initializer_list": "c",
+    "type_traits": "c",
+    "utility": "c"
+  }
+}
