@@ -83,8 +83,8 @@ void *reallocate(void *pointer, size_t old_size, size_t new_size) {
 #define CREATE_STACK(struct_name, obj_name) \
   struct_name *obj_name = _stack_##struct_name##_init();
 
-#define FREE_STACK(value_type, obj_name) \
-  FREE_ARRAY(value_type, obj_name->data, obj_name->_size); \
+#define FREE_STACK(obj_name) \
+  FREE_ARRAY(typeof(obj_name->data), obj_name->data, obj_name->_size); \
   free(obj_name);
 
 #endif

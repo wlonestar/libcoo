@@ -146,10 +146,10 @@ int main() {
   test_string_stack(stk3);
   test_foo_stack(stk4);
 
-  FREE_STACK(int, stk1)
-  FREE_STACK(float, stk2)
-  FREE_STACK(char *, stk3)
-  FREE_STACK(foo, stk4)
+  FREE_STACK(stk1)
+  FREE_STACK(stk2)
+  FREE_STACK(stk3)
+  FREE_STACK(stk4)
 
   return 0;
 }

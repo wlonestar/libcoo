@@ -86,7 +86,7 @@ int main() {
   stk->print = int_stack_print;
   test_int_stack(stk);
   // free stack
-  FREE_STACK(int, stk)
+  FREE_STACK(stk)
 
   return 0;
 }
