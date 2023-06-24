@@ -1,8 +1,10 @@
 #include "list.h"
 #include <assert.h>
 
-void assert_list(struct list *l, int *first, int *last) {
-  struct list_node *p = l->begin(l);
+DECLARE_LIST(list, int)
+
+void assert_list(list *l, int *first, int *last) {
+  list_node *p = l->begin(l);
   for (int *i = first; i != last; i++) {
     assert(p->data == *i);
     p = p->next;
@@ -10,32 +12,33 @@ void assert_list(struct list *l, int *first, int *last) {
 }
 
 void test_list_empty() {
-  list *c = init_list();
+  CREATE_LIST(list, c);
   assert(c->empty(c));
   c->push_back(c, 1);
   assert(!c->empty(c));
   c->clear(c);
   assert(c->empty(c));
+  FREE_LIST(c);
 }
 
 void test_list_resize() {
   {
-    list *l = init_list_n(10, 0);
+    CREATE_LIST_N(list, l, 10, 0);
     l->resize(l, 5);
     assert(l->size(l) == 5);
   }
   {
-    list *l = init_list_n(10, 0);
+    CREATE_LIST_N(list, l, 10, 0);
     l->resize(l, 20);
     assert(l->size(l) == 20);
   }
   {
-    list *l = init_list_n(5, 2);
+    CREATE_LIST_N(list, l, 5, 2);
     l->resize(l, 2);
     assert(l->size(l) == 2);
   }
   {
-    list *l = init_list_n(5, 2);
+    CREATE_LIST_N(list, l, 5, 2);
     l->resize(l, 10);
     assert(l->size(l) == 10);
     assert(l->front(l) == 2);
@@ -44,7 +47,7 @@ void test_list_resize() {
 }
 
 void test_list_size() {
-  list *c = init_list();
+  CREATE_LIST(list, c);
   assert(c->size(c) == 0);
   c->push_back(c, 2);
   assert(c->size(c) == 1);
@@ -68,20 +71,20 @@ void test_list_capacity() {
 
 void test_list_clear() {
   int a[] = {1, 2, 3};
-  list *c = init_list_array(a, a + 3);
+  CREATE_LIST_ARRAY(list, c, a, a + 3);
   c->clear(c);
   assert(c->empty(c));
 }
 
 void test_list_insert() {
   {
-    list *d = init_list_n(10, 1);
+    CREATE_LIST_N(list, d, 10, 1);
     d->insert(d, d->begin(d)->next->next, 6);
     d->insert(d, d->begin(d)->next->next, 5);
     d->insert(d, d->begin(d)->next->next, 4);
     d->insert(d, d->begin(d)->next->next, 3);
     assert(d->size(d) == 14);
-    struct list_node *i = d->begin(d);
+    list_node *i = d->begin(d);
     assert(i->data == 1);
     i = i->next;
     assert(i->data == 1);
@@ -113,8 +116,8 @@ void test_list_insert() {
   }
   {
     int a1[] = {1, 2, 3};
-    list *l = init_list();
-    struct list_node *i = l->insert_range(l, l->begin(l), a1, a1 + 3);
+    CREATE_LIST(list, l);
+    list_node *i = l->insert_range(l, l->begin(l), a1, a1 + 3);
     assert(i = l->begin(l));
     assert(l->size(l) == 3);
     assert(i->data == 1);
@@ -143,7 +146,7 @@ void test_list_insert() {
 
 void test_list_pop_back() {
   int a[] = {1, 2, 3};
-  list *c = init_list_array(a, a + 3);
+  CREATE_LIST_ARRAY(list, c, a, a + 3);
   c->pop_back(c);
   assert(c->front(c) == 1);
   assert(c->begin(c)->next->data == 2);
@@ -155,7 +158,7 @@ void test_list_pop_back() {
 
 void test_list_pop_front() {
   int a[] = {1, 2, 3};
-  list *c = init_list_array(a, a + 3);
+  CREATE_LIST_ARRAY(list, c, a, a + 3);
   c->pop_back(c);
   assert(c->front(c) == 1);
   assert(c->begin(c)->next->data == 2);
@@ -166,7 +169,7 @@ void test_list_pop_front() {
 }
 
 void test_list_push_back() {
-  list *c = init_list();
+  CREATE_LIST(list, c);
   for (int i = 0; i < 5; i++) {
     c->push_back(c, i);
   }
@@ -175,7 +178,7 @@ void test_list_push_back() {
 }
 
 void test_list_push_front() {
-  list *c = init_list();
+  CREATE_LIST(list, c);
   for (int i = 0; i < 5; i++) {
     c->push_front(c, i);
   }
@@ -196,8 +199,8 @@ void test_list_merge() {
   int a1[] = {1, 3, 7, 9, 10};
   int a2[] = {0, 2, 4, 5, 6, 8, 11};
   int a3[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-  list *c1 = init_list_array(a1, a1 + 5);
-  list *c2 = init_list_array(a2, a2 + 7);
+  CREATE_LIST_ARRAY(list, c1, a1, a1 + 5);
+  CREATE_LIST_ARRAY(list, c2, a2, a2 + 7);
   c1->merge(c1, c2);
   assert_list(c1, a3, a3 + 12);
   assert(c2->empty(c2));
@@ -209,8 +212,8 @@ void test_list_merge_by() {
   int a1[] = {10, 9, 7, 3, 1};
   int a2[] = {11, 8, 6, 5, 4, 2, 0};
   int a3[] = {11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
-  list *c1 = init_list_array(a1, a1 + 5);
-  list *c2 = init_list_array(a2, a2 + 7);
+  CREATE_LIST_ARRAY(list, c1, a1, a1 + 5);
+  CREATE_LIST_ARRAY(list, c2, a2, a2 + 7);
   c1->merge_by(c1, c2, greater);
   assert_list(c1, a3, a3 + 12);
   assert(c2->empty(c2));
@@ -219,7 +222,7 @@ void test_list_merge_by() {
 void test_list_remove() {
   int a1[] = {1, 2, 3, 4};
   int a2[] = {1, 2, 4};
-  list *c = init_list_array(a1, a1 + 4);
+  CREATE_LIST_ARRAY(list, c, a1, a1 + 4);
   assert(c->remove(c, 3) == 1);
   c->remove(c, 3);
   assert_list(c, a2, a2 + 3);
@@ -230,7 +233,7 @@ bool pred(int n) { return n < 3; }
 void test_list_remove_if() {
   int a1[] = {1, 2, 3, 4};
   int a2[] = {3, 4};
-  list *c = init_list_array(a1, a1 + 4);
+  CREATE_LIST_ARRAY(list, c, a1, a1 + 4);
   assert(c->remove_if(c, pred) == 2);
   c->remove_if(c, pred);
   assert_list(c, a2, a2 + 2);
@@ -239,7 +242,7 @@ void test_list_remove_if() {
 void test_list_reverse() {
   int a1[] = {11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
   int a2[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-  list *c = init_list_array(a1, a1 + 12);
+  CREATE_LIST_ARRAY(list, c, a1, a1 + 12);
   c->reverse(c);
   assert_list(c, a2, a2 + 12);
 }
@@ -247,7 +250,7 @@ void test_list_reverse() {
 void test_list_sort() {
   int a1[] = {4, 8, 1, 0, 5, 7, 2, 3, 6, 11, 10, 9};
   int a2[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-  list *c = init_list_array(a1, a1 + 12);
+  CREATE_LIST_ARRAY(list, c, a1, a1 + 12);
   c->sort(c);
   assert_list(c, a2, a2 + 12);
 }
@@ -255,7 +258,7 @@ void test_list_sort() {
 void test_list_sort_by() {
   int a1[] = {4, 8, 1, 0, 5, 7, 2, 3, 6, 11, 10, 9};
   int a2[] = {11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
-  list *c = init_list_array(a1, a1 + 12);
+  CREATE_LIST_ARRAY(list, c, a1, a1 + 12);
   c->sort_by(c, greater);
   assert_list(c, a2, a2 + 12);
 }
@@ -264,39 +267,39 @@ void test_list_splice() {
   int a1[] = {1, 2, 3};
   int a2[] = {4, 5, 6};
   {
-    list *l1 = init_list();
-    list *l2 = init_list();
+    CREATE_LIST(list, l1);
+    CREATE_LIST(list, l2);
     l1->splice(l1, l1->end(l1), l2);
     assert(l1->size(l1) == 0);
     assert(l2->size(l2) == 0);
   }
   {
-    list *l1 = init_list();
-    list *l2 = init_list_array(a2, a2 + 1);
+    CREATE_LIST(list, l1);
+    CREATE_LIST_ARRAY(list, l2, a2, a2 + 1);
     l1->splice(l1, l1->end(l1), l2);
     assert(l1->size(l1) == 1);
     assert(l2->size(l2) == 0);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 4);
   }
   {
-    list *l1 = init_list();
-    list *l2 = init_list_array(a2, a2 + 2);
+    CREATE_LIST(list, l1);
+    CREATE_LIST_ARRAY(list, l2, a2, a2 + 2);
     l1->splice(l1, l1->end(l1), l2);
     assert(l1->size(l1) == 2);
     assert(l2->size(l2) == 0);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 4);
     i = i->next;
     assert(i->data == 5);
   }
   {
-    list *l1 = init_list();
-    list *l2 = init_list_array(a2, a2 + 3);
+    CREATE_LIST(list, l1);
+    CREATE_LIST_ARRAY(list, l2, a2, a2 + 3);
     l1->splice(l1, l1->end(l1), l2);
     assert(l1->size(l1) == 3);
     assert(l2->size(l2) == 0);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 4);
     i = i->next;
     assert(i->data == 5);
@@ -304,52 +307,52 @@ void test_list_splice() {
     assert(i->data == 6);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 1);
-    list *l2 = init_list();
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
+    CREATE_LIST(list, l2);
     l1->splice(l1, l1->begin(l1), l2);
     assert(l1->size(l1) == 1);
     assert(l2->size(l2) == 0);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 1);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 1);
-    list *l2 = init_list();
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
+    CREATE_LIST(list, l2);
     l1->splice(l1, l1->end(l1), l2);
     assert(l1->size(l1) == 1);
     assert(l2->size(l2) == 0);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 1);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 1);
-    list *l2 = init_list_array(a2, a2 + 1);
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
+    CREATE_LIST_ARRAY(list, l2, a2, a2 + 1);
     l1->splice(l1, l1->begin(l1), l2);
     assert(l1->size(l1) == 2);
     assert(l2->size(l2) == 0);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 4);
     i = i->next;
     assert(i->data == 1);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 1);
-    list *l2 = init_list_array(a2, a2 + 1);
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
+    CREATE_LIST_ARRAY(list, l2, a2, a2 + 1);
     l1->splice(l1, l1->end(l1), l2);
     assert(l1->size(l1) == 2);
     assert(l2->size(l2) == 0);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 1);
     i = i->next;
     assert(i->data == 4);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 1);
-    list *l2 = init_list_array(a2, a2 + 2);
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
+    CREATE_LIST_ARRAY(list, l2, a2, a2 + 2);
     l1->splice(l1, l1->begin(l1), l2);
     assert(l1->size(l1) == 3);
     assert(l2->size(l2) == 0);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 4);
     i = i->next;
     assert(i->data == 5);
@@ -357,12 +360,12 @@ void test_list_splice() {
     assert(i->data == 1);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 1);
-    list *l2 = init_list_array(a2, a2 + 2);
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
+    CREATE_LIST_ARRAY(list, l2, a2, a2 + 2);
     l1->splice(l1, l1->end(l1), l2);
     assert(l1->size(l1) == 3);
     assert(l2->size(l2) == 0);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 1);
     i = i->next;
     assert(i->data == 4);
@@ -370,12 +373,12 @@ void test_list_splice() {
     assert(i->data == 5);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 1);
-    list *l2 = init_list_array(a2, a2 + 3);
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
+    CREATE_LIST_ARRAY(list, l2, a2, a2 + 3);
     l1->splice(l1, l1->begin(l1), l2);
     assert(l1->size(l1) == 4);
     assert(l2->size(l2) == 0);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 4);
     i = i->next;
     assert(i->data == 5);
@@ -385,12 +388,12 @@ void test_list_splice() {
     assert(i->data == 1);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 1);
-    list *l2 = init_list_array(a2, a2 + 3);
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
+    CREATE_LIST_ARRAY(list, l2, a2, a2 + 3);
     l1->splice(l1, l1->end(l1), l2);
     assert(l1->size(l1) == 4);
     assert(l2->size(l2) == 0);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 1);
     i = i->next;
     assert(i->data == 4);
@@ -400,12 +403,12 @@ void test_list_splice() {
     assert(i->data == 6);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 2);
-    list *l2 = init_list_array(a2, a2 + 1);
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 2);
+    CREATE_LIST_ARRAY(list, l2, a2, a2 + 1);
     l1->splice(l1, l1->begin(l1), l2);
     assert(l1->size(l1) == 3);
     assert(l2->size(l2) == 0);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 4);
     i = i->next;
     assert(i->data == 1);
@@ -413,12 +416,12 @@ void test_list_splice() {
     assert(i->data == 2);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 2);
-    list *l2 = init_list_array(a2, a2 + 1);
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 2);
+    CREATE_LIST_ARRAY(list, l2, a2, a2 + 1);
     l1->splice(l1, l1->begin(l1)->next, l2);
     assert(l1->size(l1) == 3);
     assert(l2->size(l2) == 0);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 1);
     i = i->next;
     assert(i->data == 4);
@@ -431,43 +434,43 @@ void test_list_splice_from() {
   int a1[] = {1, 2, 3};
   int a2[] = {4, 5, 6};
   {
-    list *l1 = init_list();
-    list *l2 = init_list_array(a2, a2 + 1);
+    CREATE_LIST(list, l1);
+    CREATE_LIST_ARRAY(list, l2, a2, a2 + 1);
     l1->splice_from(l1, l1->end(l1), l2, l2->begin(l2));
     assert(l1->size(l1) == 1);
     assert(l2->size(l2) == 0);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 4);
   }
   {
-    list *l1 = init_list();
-    list *l2 = init_list_array(a2, a2 + 2);
+    CREATE_LIST(list, l1);
+    CREATE_LIST_ARRAY(list, l2, a2, a2 + 2);
     l1->splice_from(l1, l1->end(l1), l2, l2->begin(l2));
     assert(l1->size(l1) == 1);
     assert(l2->size(l2) == 1);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 4);
     i = l2->begin(l2);
     assert(i->data == 5);
   }
   {
-    list *l1 = init_list();
-    list *l2 = init_list_array(a2, a2 + 2);
+    CREATE_LIST(list, l1);
+    CREATE_LIST_ARRAY(list, l2, a2, a2 + 2);
     l1->splice_from(l1, l1->end(l1), l2, l2->begin(l2)->next);
     assert(l1->size(l1) == 1);
     assert(l2->size(l2) == 1);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 5);
     i = l2->begin(l2);
     assert(i->data == 4);
   }
   {
-    list *l1 = init_list();
-    list *l2 = init_list_array(a2, a2 + 3);
+    CREATE_LIST(list, l1);
+    CREATE_LIST_ARRAY(list, l2, a2, a2 + 3);
     l1->splice_from(l1, l1->end(l1), l2, l2->begin(l2));
     assert(l1->size(l1) == 1);
     assert(l2->size(l2) == 2);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 4);
     i = l2->begin(l2);
     assert(i->data == 5);
@@ -475,12 +478,12 @@ void test_list_splice_from() {
     assert(i->data == 6);
   }
   {
-    list *l1 = init_list();
-    list *l2 = init_list_array(a2, a2 + 3);
+    CREATE_LIST(list, l1);
+    CREATE_LIST_ARRAY(list, l2, a2, a2 + 3);
     l1->splice_from(l1, l1->end(l1), l2, l2->begin(l2)->next);
     assert(l1->size(l1) == 1);
     assert(l2->size(l2) == 2);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 5);
     i = l2->begin(l2);
     assert(i->data == 4);
@@ -488,66 +491,66 @@ void test_list_splice_from() {
     assert(i->data == 6);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 1);
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
     l1->splice_from(l1, l1->begin(l1), l1, l1->begin(l1));
     assert(l1->size(l1) == 1);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 1);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 1);
-    list *l2 = init_list_array(a2, a2 + 1);
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
+    CREATE_LIST_ARRAY(list, l2, a2, a2 + 1);
     l1->splice_from(l1, l1->begin(l1), l2, l2->begin(l2));
     assert(l1->size(l1) == 2);
     assert(l2->size(l2) == 0);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 4);
     i = i->next;
     assert(i->data == 1);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 1);
-    list *l2 = init_list_array(a2, a2 + 1);
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
+    CREATE_LIST_ARRAY(list, l2, a2, a2 + 1);
     l1->splice_from(l1, l1->begin(l1)->next, l2, l2->begin(l2));
     assert(l1->size(l1) == 2);
     assert(l2->size(l2) == 0);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 1);
     i = i->next;
     assert(i->data == 4);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 2);
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 2);
     l1->splice_from(l1, l1->begin(l1), l1, l1->begin(l1));
     assert(l1->size(l1) == 2);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 1);
     i = i->next;
     assert(i->data == 2);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 2);
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 2);
     l1->splice_from(l1, l1->begin(l1), l1, l1->begin(l1)->next);
     assert(l1->size(l1) == 2);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 2);
     i = i->next;
     assert(i->data == 1);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 2);
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 2);
     l1->splice_from(l1, l1->begin(l1)->next, l1, l1->begin(l1));
     assert(l1->size(l1) == 2);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 1);
     i = i->next;
     assert(i->data == 2);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 2);
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 2);
     l1->splice_from(l1, l1->begin(l1)->next, l1, l1->begin(l1)->next);
     assert(l1->size(l1) == 2);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 1);
     i = i->next;
     assert(i->data == 2);
@@ -558,11 +561,11 @@ void test_list_splice_range() {
   int a1[] = {1, 2, 3};
   int a2[] = {4, 5, 6};
   {
-    list *l1 = init_list_array(a1, a1 + 3);
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 3);
     l1->splice_range(l1, l1->begin(l1), l1, l1->begin(l1)->next,
                      l1->begin(l1)->next);
     assert(l1->size(l1) == 3);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 1);
     i = i->next;
     assert(i->data == 2);
@@ -570,11 +573,11 @@ void test_list_splice_range() {
     assert(i->data == 3);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 3);
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 3);
     l1->splice_range(l1, l1->begin(l1), l1, l1->begin(l1)->next,
                      l1->begin(l1)->next->next);
     assert(l1->size(l1) == 3);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 2);
     i = i->next;
     assert(i->data == 1);
@@ -582,11 +585,11 @@ void test_list_splice_range() {
     assert(i->data == 3);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 3);
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 3);
     l1->splice_range(l1, l1->begin(l1), l1, l1->begin(l1)->next,
                      l1->begin(l1)->next->next->next);
     assert(l1->size(l1) == 3);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 2);
     i = i->next;
     assert(i->data == 3);
@@ -594,11 +597,11 @@ void test_list_splice_range() {
     assert(i->data == 1);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 3);
-    list *l2 = init_list_array(a2, a2 + 3);
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 3);
+    CREATE_LIST_ARRAY(list, l2, a2, a2 + 3);
     l1->splice_range(l1, l1->begin(l1), l2, l2->begin(l2)->next, l2->end(l2));
     assert(l1->size(l1) == 5);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 5);
     i = i->next;
     assert(i->data == 6);
@@ -613,12 +616,12 @@ void test_list_splice_range() {
     assert(i->data == 4);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 3);
-    list *l2 = init_list_array(a2, a2 + 3);
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 3);
+    CREATE_LIST_ARRAY(list, l2, a2, a2 + 3);
     l1->splice_range(l1, l1->begin(l1)->next, l2, l2->begin(l2)->next,
                      l2->end(l2));
     assert(l1->size(l1) == 5);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 1);
     i = i->next;
     assert(i->data == 5);
@@ -633,11 +636,11 @@ void test_list_splice_range() {
     assert(i->data == 4);
   }
   {
-    list *l1 = init_list_array(a1, a1 + 3);
-    list *l2 = init_list_array(a2, a2 + 3);
+    CREATE_LIST_ARRAY(list, l1, a1, a1 + 3);
+    CREATE_LIST_ARRAY(list, l2, a2, a2 + 3);
     l1->splice_range(l1, l1->end(l1), l2, l2->begin(l2)->next, l2->end(l2));
     assert(l1->size(l1) == 5);
-    struct list_node *i = l1->begin(l1);
+    list_node *i = l1->begin(l1);
     assert(i->data == 1);
     i = i->next;
     assert(i->data == 2);
@@ -656,7 +659,7 @@ void test_list_splice_range() {
 void test_list_unique() {
   int a1[] = {2, 1, 1, 4, 4, 4, 4, 3, 3};
   int a2[] = {2, 1, 4, 3};
-  list *c = init_list_array(a1, a1 + 9);
+  CREATE_LIST_ARRAY(list, c, a1, a1 + 9);
   assert(c->unique(c) == 5);
   assert_list(c, a2, a2 + 4);
 }
@@ -666,7 +669,7 @@ bool equal(int a, int b) { return a == b; }
 void test_list_unique_by() {
   int a1[] = {2, 1, 1, 4, 4, 4, 4, 3, 3};
   int a2[] = {2, 1, 4, 3};
-  list *c = init_list_array(a1, a1 + 9);
+  CREATE_LIST_ARRAY(list, c, a1, a1 + 9);
   assert(c->unique_by(c, equal) == 5);
   assert_list(c, a2, a2 + 4);
 }
@@ -690,8 +693,8 @@ void test_list_swap() {
   {
     int a1[] = {1, 3, 7, 9, 10};
     int a2[] = {0, 2, 4, 5, 6, 8, 11};
-    list *c1 = init_list_array(a1, a1 + 5);
-    list *c2 = init_list_array(a2, a2 + 7);
+    CREATE_LIST_ARRAY(list, c1, a1, a1 + 5);
+    CREATE_LIST_ARRAY(list, c2, a2, a2 + 7);
     list_node *it1 = c1->begin(c1);
     list_node *it2 = c2->begin(c2);
     c1->swap(c1, c2);
@@ -702,28 +705,28 @@ void test_list_swap() {
   }
   {
     int a2[] = {0, 2, 4, 5, 6, 8, 11};
-    list *c1 = init_list();
-    list *c2 = init_list_array(a2, a2 + 7);
+    CREATE_LIST(list, c1);
+    CREATE_LIST_ARRAY(list, c2, a2, a2 + 7);
     c1->swap(c1, c2);
     assert_list(c1, a2, a2 + 7);
     assert(c2->empty(c2));
   }
   {
     int a1[] = {1, 3, 7, 9, 10};
-    list *c1 = init_list_array(a1, a1 + 5);
-    list *c2 = init_list();
+    CREATE_LIST_ARRAY(list, c1, a1, a1 + 5);
+    CREATE_LIST(list, c2);
     c1->swap(c1, c2);
     assert(c1->empty(c1));
     assert_list(c2, a1, a1 + 5);
   }
   {
-    list *c1 = init_list();
-    list *c2 = init_list();
+    CREATE_LIST(list, c1);
+    CREATE_LIST(list, c2);
     c1->swap(c1, c2);
     assert(c1->empty(c1));
     assert(c2->empty(c2));
-    free_list(c1);
-    free_list(c2);
+    FREE_LIST(c1);
+    FREE_LIST(c2);
   }
 }
 
