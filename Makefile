@@ -1,13 +1,27 @@
-NAME := stack
+CC = gcc
+CFLAGS = -std=c99 -Wall -g -Iinclude
 
-SRCS   := $(shell find . -maxdepth 1 -name "*.c")
-DEPS   := $(shell find . -maxdepth 1 -name "*.h") $(SRCS)
-CFLAGS += -O2 -std=gnu11 -ggdb -Wall -Werror -Wno-unused-result -Wno-unused-value -Wno-unused-variable
+TEST_DIR = test
+INCLUDE_DIR = include
 
-.PHONY: all git test clean
+TEST_FILES := $(wildcard $(TEST_DIR)/*.c)
+EXECUTABLES = $(patsubst $(TEST_DIR)/%.c, %, $(TEST_FILES))
 
-$(NAME): $(DEPS)
-	gcc $(CFLAGS) $(SRCS) -o $@ $(LDFLAGS)
+$(TEST_DIR)/%.c: $(INCLUDE_DIR)/%.h 
+	$(CC) $(CFLAGS) -o $(EXECUTABLES) $^
+
+%: $(TEST_DIR)/%.c 
+	$(CC) $(CFLAGS) -o $@ $^
 
 clean:
-	rm -f $(NAME)
+	rm -f $(EXECUTABLES)
+
+.PHONY: message 
+message:
+	@echo "CC = $(CC)"
+	@echo "CFLAGS = $(CFLAGS)"
+	@echo "TEST_DIR = $(TEST_DIR)" 
+	@echo "INCLUDE_DIR = $(INCLUDE_DIR)"
+	@echo "TEST_FILES = $(TEST_FILES)"
+	@echo "EXECUTABLES = $(EXECUTABLES)"
+
