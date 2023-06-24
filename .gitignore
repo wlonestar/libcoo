@@ -1,1 +1,8 @@
+/.vscode
+/.idea
+/build
+
 *_test
+
+compile_commands.json
+

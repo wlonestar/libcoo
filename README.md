@@ -1,4 +1,8 @@
-# generic stack in C
+# generic containers in C
+
+- [ ] list
+
+- [ ] stack
 
 ## Usage
 
