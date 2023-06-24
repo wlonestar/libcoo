@@ -339,16 +339,15 @@ static void list_reverse(struct list *self) {
   }
 }
 
-// untested!!!
 static size_t list_unique(struct list *self) {
   if (self->_size < 2) {
     return 0;
   }
   size_t old_size = self->_size;
-  struct list_node *p = self->_head->next;
-  struct list_node *l = p->next;
-  struct list_node *r;
+  struct list_node *p = self->begin(self);
+  struct list_node *l, *r;
   while (p != self->_head) {
+    l = p->next;
     if (p->data == l->data) {
       r = l->next;
       while (r != self->_head) {
@@ -358,22 +357,23 @@ static size_t list_unique(struct list *self) {
           break;
         }
       }
-      p = self->erase_range(self, l, r->next);
+      p = self->erase_range(self, l, r);
+    } else {
+      p = p->next;
     }
   }
   return old_size - self->_size;
 }
 
-// untested!!!
 static size_t list_unique_by(struct list *self, bool (*pred)(int a, int b)) {
   if (self->_size < 2) {
     return 0;
   }
   size_t old_size = self->_size;
   struct list_node *p = self->_head->next;
-  struct list_node *l = p->next;
-  struct list_node *r;
+  struct list_node *l, *r;
   while (p != self->_head) {
+    l = p->next;
     if (pred(p->data, l->data)) {
       r = l->next;
       while (r != self->_head) {
@@ -383,7 +383,9 @@ static size_t list_unique_by(struct list *self, bool (*pred)(int a, int b)) {
           break;
         }
       }
-      p = self->erase_range(self, l, r->next);
+      p = self->erase_range(self, l, r);
+    } else {
+      p = p->next;
     }
   }
   return old_size - self->_size;

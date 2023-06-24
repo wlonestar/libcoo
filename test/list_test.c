@@ -1,6 +1,14 @@
 #include "list.h"
 #include <assert.h>
 
+void assert_list(struct list *l, int *first, int *last) {
+  struct list_node *p = l->begin(l);
+  for (int *i = first; i != last; i++) {
+    assert(p->data == *i);
+    p = p->next;
+  }
+}
+
 void test_list_empty() {
   list *c = init_list();
   assert(c->empty(c));
@@ -163,11 +171,7 @@ void test_list_push_back() {
     c->push_back(c, i);
   }
   int a[] = {0, 1, 2, 3, 4};
-  struct list_node *p = c->begin(c);
-  for (int i = 0; i < 5; i++) {
-    assert(p->data == a[i]);
-    p = p->next;
-  }
+  assert_list(c, a, a + 5);
 }
 
 void test_list_push_front() {
@@ -176,11 +180,7 @@ void test_list_push_front() {
     c->push_front(c, i);
   }
   int a[] = {4, 3, 2, 1, 0};
-  struct list_node *p = c->begin(c);
-  for (int i = 0; i < 5; i++) {
-    assert(p->data == a[i]);
-    p = p->next;
-  }
+  assert_list(c, a, a + 5);
 }
 
 void test_list_modifiers() {
@@ -199,11 +199,7 @@ void test_list_merge() {
   list *c1 = init_list_array(a1, a1 + 5);
   list *c2 = init_list_array(a2, a2 + 7);
   c1->merge(c1, c2);
-  struct list_node *p = c1->begin(c1);
-  for (int i = 0; i < 12; i++) {
-    assert(p->data == a3[i]);
-    p = p->next;
-  }
+  assert_list(c1, a3, a3 + 12);
   assert(c2->empty(c2));
 }
 
@@ -216,11 +212,7 @@ void test_list_merge_by() {
   list *c1 = init_list_array(a1, a1 + 5);
   list *c2 = init_list_array(a2, a2 + 7);
   c1->merge_by(c1, c2, greater);
-  struct list_node *p = c1->begin(c1);
-  for (int i = 0; i < 12; i++) {
-    assert(p->data == a3[i]);
-    p = p->next;
-  }
+  assert_list(c1, a3, a3 + 12);
   assert(c2->empty(c2));
 }
 
@@ -230,11 +222,7 @@ void test_list_remove() {
   list *c = init_list_array(a1, a1 + 4);
   assert(c->remove(c, 3) == 1);
   c->remove(c, 3);
-  struct list_node *p = c->begin(c);
-  for (int i = 0; i < 3; i++) {
-    assert(p->data == a2[i]);
-    p = p->next;
-  }
+  assert_list(c, a2, a2 + 3);
 }
 
 bool pred(int n) { return n < 3; }
@@ -245,11 +233,7 @@ void test_list_remove_if() {
   list *c = init_list_array(a1, a1 + 4);
   assert(c->remove_if(c, pred) == 2);
   c->remove_if(c, pred);
-  struct list_node *p = c->begin(c);
-  for (int i = 0; i < 2; i++) {
-    assert(p->data == a2[i]);
-    p = p->next;
-  }
+  assert_list(c, a2, a2 + 2);
 }
 
 void test_list_reverse() {
@@ -257,11 +241,7 @@ void test_list_reverse() {
   int a2[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
   list *c = init_list_array(a1, a1 + 12);
   c->reverse(c);
-  struct list_node *p = c->begin(c);
-  for (int i = 0; i < 12; i++) {
-    assert(p->data == a2[i]);
-    p = p->next;
-  }
+  assert_list(c, a2, a2 + 12);
 }
 
 void test_list_sort() {
@@ -269,11 +249,7 @@ void test_list_sort() {
   int a2[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
   list *c = init_list_array(a1, a1 + 12);
   c->sort(c);
-  struct list_node *p = c->begin(c);
-  for (int i = 0; i < 12; i++) {
-    assert(p->data == a2[i]);
-    p = p->next;
-  }
+  assert_list(c, a2, a2 + 12);
 }
 
 void test_list_sort_by() {
@@ -281,11 +257,7 @@ void test_list_sort_by() {
   int a2[] = {11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
   list *c = init_list_array(a1, a1 + 12);
   c->sort_by(c, greater);
-  struct list_node *p = c->begin(c);
-  for (int i = 0; i < 12; i++) {
-    assert(p->data == a2[i]);
-    p = p->next;
-  }
+  assert_list(c, a2, a2 + 12);
 }
 
 void test_list_splice() {
@@ -515,6 +487,71 @@ void test_list_splice_from() {
     i = i->next;
     assert(i->data == 6);
   }
+  {
+    list *l1 = init_list_array(a1, a1 + 1);
+    l1->splice_from(l1, l1->begin(l1), l1, l1->begin(l1));
+    assert(l1->size(l1) == 1);
+    struct list_node *i = l1->begin(l1);
+    assert(i->data == 1);
+  }
+  {
+    list *l1 = init_list_array(a1, a1 + 1);
+    list *l2 = init_list_array(a2, a2 + 1);
+    l1->splice_from(l1, l1->begin(l1), l2, l2->begin(l2));
+    assert(l1->size(l1) == 2);
+    assert(l2->size(l2) == 0);
+    struct list_node *i = l1->begin(l1);
+    assert(i->data == 4);
+    i = i->next;
+    assert(i->data == 1);
+  }
+  {
+    list *l1 = init_list_array(a1, a1 + 1);
+    list *l2 = init_list_array(a2, a2 + 1);
+    l1->splice_from(l1, l1->begin(l1)->next, l2, l2->begin(l2));
+    assert(l1->size(l1) == 2);
+    assert(l2->size(l2) == 0);
+    struct list_node *i = l1->begin(l1);
+    assert(i->data == 1);
+    i = i->next;
+    assert(i->data == 4);
+  }
+  {
+    list *l1 = init_list_array(a1, a1 + 2);
+    l1->splice_from(l1, l1->begin(l1), l1, l1->begin(l1));
+    assert(l1->size(l1) == 2);
+    struct list_node *i = l1->begin(l1);
+    assert(i->data == 1);
+    i = i->next;
+    assert(i->data == 2);
+  }
+  {
+    list *l1 = init_list_array(a1, a1 + 2);
+    l1->splice_from(l1, l1->begin(l1), l1, l1->begin(l1)->next);
+    assert(l1->size(l1) == 2);
+    struct list_node *i = l1->begin(l1);
+    assert(i->data == 2);
+    i = i->next;
+    assert(i->data == 1);
+  }
+  {
+    list *l1 = init_list_array(a1, a1 + 2);
+    l1->splice_from(l1, l1->begin(l1)->next, l1, l1->begin(l1));
+    assert(l1->size(l1) == 2);
+    struct list_node *i = l1->begin(l1);
+    assert(i->data == 1);
+    i = i->next;
+    assert(i->data == 2);
+  }
+  {
+    list *l1 = init_list_array(a1, a1 + 2);
+    l1->splice_from(l1, l1->begin(l1)->next, l1, l1->begin(l1)->next);
+    assert(l1->size(l1) == 2);
+    struct list_node *i = l1->begin(l1);
+    assert(i->data == 1);
+    i = i->next;
+    assert(i->data == 2);
+  }
 }
 
 void test_list_splice_range() {
@@ -621,6 +658,17 @@ void test_list_unique() {
   int a2[] = {2, 1, 4, 3};
   list *c = init_list_array(a1, a1 + 9);
   assert(c->unique(c) == 5);
+  assert_list(c, a2, a2 + 4);
+}
+
+bool equal(int a, int b) { return a == b; }
+
+void test_list_unique_by() {
+  int a1[] = {2, 1, 1, 4, 4, 4, 4, 3, 3};
+  int a2[] = {2, 1, 4, 3};
+  list *c = init_list_array(a1, a1 + 9);
+  assert(c->unique_by(c, equal) == 5);
+  assert_list(c, a2, a2 + 4);
 }
 
 void test_list_operations() {
@@ -635,11 +683,56 @@ void test_list_operations() {
   test_list_splice_from();
   test_list_splice_range();
   test_list_unique();
+  test_list_unique_by();
 }
+
+void test_list_swap() {
+  {
+    int a1[] = {1, 3, 7, 9, 10};
+    int a2[] = {0, 2, 4, 5, 6, 8, 11};
+    list *c1 = init_list_array(a1, a1 + 5);
+    list *c2 = init_list_array(a2, a2 + 7);
+    list_node *it1 = c1->begin(c1);
+    list_node *it2 = c2->begin(c2);
+    c1->swap(c1, c2);
+    assert_list(c1, a2, a2 + 7);
+    assert_list(c2, a1, a1 + 5);
+    assert(it1 == c2->begin(c2)); // Iterators remain valid
+    assert(it2 == c1->begin(c1)); // Iterators remain valid
+  }
+  {
+    int a2[] = {0, 2, 4, 5, 6, 8, 11};
+    list *c1 = init_list();
+    list *c2 = init_list_array(a2, a2 + 7);
+    c1->swap(c1, c2);
+    assert_list(c1, a2, a2 + 7);
+    assert(c2->empty(c2));
+  }
+  {
+    int a1[] = {1, 3, 7, 9, 10};
+    list *c1 = init_list_array(a1, a1 + 5);
+    list *c2 = init_list();
+    c1->swap(c1, c2);
+    assert(c1->empty(c1));
+    assert_list(c2, a1, a1 + 5);
+  }
+  {
+    list *c1 = init_list();
+    list *c2 = init_list();
+    c1->swap(c1, c2);
+    assert(c1->empty(c1));
+    assert(c2->empty(c2));
+    free_list(c1);
+    free_list(c2);
+  }
+}
+
+void test_list_special() { test_list_swap(); }
 
 int main() {
   test_list_capacity();
   test_list_modifiers();
   test_list_operations();
+  test_list_special();
   return 0;
 }

@@ -12,6 +12,7 @@ $(TEST_DIR)/%.c: $(INCLUDE_DIR)/%.h
 
 %: $(TEST_DIR)/%.c 
 	$(CC) $(CFLAGS) -o $@ $^
+	./$@
 
 clean:
 	rm -f $(EXECUTABLES)
