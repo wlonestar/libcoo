@@ -3,6 +3,7 @@
 /build
 
 *_test
+*_example
 
 compile_commands.json
 
