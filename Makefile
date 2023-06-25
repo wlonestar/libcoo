@@ -7,6 +7,8 @@ INCLUDE_DIR = include
 TEST_FILES := $(wildcard $(TEST_DIR)/*.c)
 EXECUTABLES = $(patsubst $(TEST_DIR)/%.c, %, $(TEST_FILES))
 
+.DEFAULT_GOAL := clean
+
 $(TEST_DIR)/%.c: $(INCLUDE_DIR)/%.h 
 	$(CC) $(CFLAGS) -o $(EXECUTABLES) $^
 
@@ -14,8 +16,13 @@ $(TEST_DIR)/%.c: $(INCLUDE_DIR)/%.h
 	$(CC) $(CFLAGS) -o $@ $^
 	./$@
 
+example:
+	$(CC) ./examples/$(NAME).c $(CFLAGS) -o $(NAME)_example
+	./$(NAME)_example
+
 clean:
 	rm -f $(EXECUTABLES)
+	rm -f *_example
 
 .PHONY: message 
 message:
