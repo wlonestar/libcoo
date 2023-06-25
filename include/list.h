@@ -1,7 +1,8 @@
 #ifndef list_h
 #define list_h
 
-#include "alloc.h"
+#include <stddef.h>
+#include <stdbool.h>
 
 #define DECLARE_LIST(list, T)                                                  \
   typedef struct list##_node {                                                 \
