@@ -20,6 +20,10 @@ example:
 	$(CC) ./examples/$(NAME).c $(CFLAGS) -o $(NAME)_example
 	./$(NAME)_example
 
+debug:
+	$(CC) $(CFLAGS) -o $(NAME) ./test/$(NAME).c
+	gdb $(NAME)
+
 clean:
 	rm -f $(EXECUTABLES)
 	rm -f *_example
