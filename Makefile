@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -std=c11 -Wall -g -Iinclude
+CFLAGS = -std=c11 -Wall -g -Iinclude -fsanitize=address
 
 TEST_DIR = test
 EXAMPLES_DIR = examples
@@ -22,9 +22,12 @@ example: config
 
 build: test example
 
+run:
+	./$(BUILD_DIR)/$(NAME)
+
 gdb:
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$(NAME) ./test/$(NAME).c
-	gdb $(BUILD_DIR)/$(NAME)
+	gdbgui $(BUILD_DIR)/$(NAME)
 
 clean:
 	rm -f build/*

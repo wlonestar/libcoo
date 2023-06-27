@@ -2,6 +2,8 @@
 #define vector_h
 
 #include "alloc.h"
+#include <assert.h>
+#include <memory.h>
 
 typedef struct vector {
   int *_data;
@@ -93,17 +95,27 @@ static void vector_reserve(struct vector *self, size_t new_cap) {
   if (new_cap < self->_capacity) {
     return;
   }
+  size_t old_cap = self->_capacity;
   self->_capacity = new_cap;
-  int *old = self->_data;
-  self->_data = (int *)realloc(self->_data, self->_capacity);
+  int *old = malloc(sizeof(int) * old_cap);
+  memcpy(old, self->_data, old_cap);
+  self->_data = (int *)realloc(self->_data, sizeof(int) * self->_capacity);
+  assert(self->_capacity >= self->_size);
+  assert(old_cap >= self->_size);
   for (size_t i = 0; i < self->_size; i++) {
+    assert(i < self->_capacity);
+    assert(i < old_cap);
     self->_data[i] = old[i];
   }
+  free(old);
 }
 
 static size_t vector_capacity(struct vector *self) { return self->_capacity; }
 
 static void vector_shrink_to_fit(struct vector *self) {
+  if (self->_size == self->_capacity) {
+    return;
+  }
   if (self->_size * 4 > self->_capacity) {
     return;
   }
@@ -113,6 +125,7 @@ static void vector_shrink_to_fit(struct vector *self) {
   for (size_t i = 0; i < self->_size; i++) {
     self->_data[i] = old[i];
   }
+  free(old);
 }
 
 //
@@ -255,12 +268,8 @@ static void vector_assign_method(struct vector *obj) {
   obj->print = vector_print;
 }
 
-static struct vector *malloc_vector() {
-  return (struct vector *)malloc(sizeof(struct vector));
-}
-
 static struct vector *init_vector() {
-  struct vector *obj = malloc_vector();
+  struct vector *obj = (struct vector *) malloc(sizeof(struct vector));
   obj->_capacity = 0;
   obj->_data = (int *)malloc(sizeof(int) * obj->_capacity);
   obj->_size = 0;
@@ -271,7 +280,7 @@ static struct vector *init_vector() {
 static struct vector *init_vector_n(size_t count, int value) {
   struct vector *obj = init_vector();
   obj->_capacity = count;
-  obj->_data = (int *)realloc(obj->_data, sizeof(int) * count);
+  obj->_data = (int *)realloc(obj->_data, sizeof(int) * obj->_capacity);
   for (size_t i = 0; i < count; i++) {
     obj->push_back(obj, value);
   }
@@ -280,6 +289,8 @@ static struct vector *init_vector_n(size_t count, int value) {
 
 static struct vector *init_vector_array(int *begin, int *end) {
   struct vector *obj = init_vector();
+  obj->_capacity = end - begin;
+  obj->_data = (int *)realloc(obj->_data, sizeof(int) * obj->_capacity);
   for (int *i = begin; i != end; i++) {
     int val = i[0];
     obj->push_back(obj, val);
