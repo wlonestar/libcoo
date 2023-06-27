@@ -27,6 +27,10 @@ run:
 
 gdb:
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$(NAME) ./test/$(NAME).c
+	gdb $(BUILD_DIR)/$(NAME)
+
+gdbgui:
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$(NAME) ./test/$(NAME).c
 	gdbgui $(BUILD_DIR)/$(NAME)
 
 clean:

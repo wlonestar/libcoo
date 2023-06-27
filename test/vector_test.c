@@ -3,6 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void assert_vector(vector *v, int *first, int *last) {
+  int *p = v->begin(v);
+  for (int *i = first; i != last; i++) {
+    assert(*p == *i);
+    p++;
+  }
+}
+
 void test_vector_cap() {
   {
     vector *v = init_vector();
@@ -135,12 +143,79 @@ void test_vector_clear() {
 }
 
 void test_vector_erase() {
-
+  {
+    int a[] = {1, 2, 3, 4, 5};
+    vector *v = init_vector_array(a, a + 5);
+    v->erase(v, v->begin(v));
+    assert_vector(v, a + 1, a + 5);
+    free_vector(v);
+  }
+  {
+    int a[] = {1, 2, 3, 4, 5};
+    int e[] = {1, 3, 4, 5};
+    vector *v = init_vector_array(a, a + 5);
+    v->erase(v, v->begin(v) + 1);
+    assert_vector(v, e, e + 4);
+    free_vector(v);
+  }
+  {
+    int a[] = {1, 2, 3};
+    vector *v = init_vector_array(a, a + 3);
+    int *i = v->begin(v);
+    i++;
+    int *j = v->erase(v, i);
+    assert(v->size(v) == 2);
+    assert(*j == 3);
+    assert(*(v->begin(v)) == 1);
+    assert(*(v->begin(v) + 1) == 3);
+    j = v->erase(v, j);
+    assert(j == v->end(v));
+    assert(v->size(v) == 1);
+    assert(*(v->begin(v)) == 1);
+    j = v->erase(v, v->begin(v));
+    assert(j == v->end(v));
+    free_vector(v);
+  }
 }
 
-void test_vector_modifiers() { 
+void test_vector_erase_range() {
+  int a[] = {1, 2, 3};
+  {
+    vector *v = init_vector_array(a, a + 3);
+    int *i = v->erase_range(v, v->begin(v), v->begin(v));
+    assert(v->size(v) == 3);
+    assert(i == v->begin(v));
+    free_vector(v);
+  }
+  {
+    vector *v = init_vector_array(a, a + 3);
+    int *i = v->erase_range(v, v->begin(v), v->begin(v) + 1);
+    assert(v->size(v) == 2);
+    assert(i == v->begin(v));
+    assert_vector(v, a + 1, a + 3);
+    free_vector(v);
+  }
+  {
+    vector *v = init_vector_array(a, a + 3);
+    int *i = v->erase_range(v, v->begin(v), v->begin(v) + 2);
+    assert(v->size(v) == 1);
+    assert(i == v->begin(v));
+    assert_vector(v, a + 2, a + 3);
+    free_vector(v);
+  }
+  {
+    vector *v = init_vector_array(a, a + 3);
+    int *i = v->erase_range(v, v->begin(v), v->begin(v) + 3);
+    assert(v->size(v) == 0);
+    assert(i == v->begin(v));
+    free_vector(v);
+  }
+}
+
+void test_vector_modifiers() {
   test_vector_clear();
   test_vector_erase();
+  test_vector_erase_range();
 }
 
 int main() {

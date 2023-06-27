@@ -175,12 +175,13 @@ static int *vector_insert_range(struct vector *self, int *pos, int *first,
 }
 
 static int *vector_erase(struct vector *self, int *pos) {
-  for (int *i = pos; i != self->end(self); i++) {
+  int *end = self->end(self);
+  for (int *i = pos; i != (end - 1); i++) {
     int val = *(i + 1);
     *i = val;
   }
   self->_size--;
-  return pos == (self->end(self) - 1) ? self->end(self) : pos;
+  return pos == (end - 1) ? self->end(self) : pos;
 }
 
 static int *vector_erase_range(struct vector *self, int *first, int *last) {
@@ -188,15 +189,17 @@ static int *vector_erase_range(struct vector *self, int *first, int *last) {
     return last;
   }
   size_t removed = last - first;
-  for (int *i = first; i != self->end(self); i++) {
-    int val = *(i + removed);
-    *i = val;
-  }
-  self->_size -= removed;
-  if (last == self->end(self)) {
+  int *end = self->end(self);
+  if (last == end) {
+    self->_size -= removed;
     return self->end(self);
   }
-  return last;
+  for (int *i = last; i != end; i++) {
+    int val = *i;
+    *(i - removed) = val;
+  }
+  self->_size -= removed;
+  return first;
 }
 
 static void vector_push_back(struct vector *self, int value) {
@@ -269,7 +272,7 @@ static void vector_assign_method(struct vector *obj) {
 }
 
 static struct vector *init_vector() {
-  struct vector *obj = (struct vector *) malloc(sizeof(struct vector));
+  struct vector *obj = (struct vector *)malloc(sizeof(struct vector));
   obj->_capacity = 0;
   obj->_data = (int *)malloc(sizeof(int) * obj->_capacity);
   obj->_size = 0;
