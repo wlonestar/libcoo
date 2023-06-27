@@ -1,39 +1,32 @@
 CC = gcc
-CFLAGS = -std=c99 -Wall -g -Iinclude
+CFLAGS = -std=c11 -Wall -g -Iinclude
 
 TEST_DIR = test
-INCLUDE_DIR = include
+EXAMPLES_DIR = examples
+BUILD_DIR = build
 
-TEST_FILES := $(wildcard $(TEST_DIR)/*.c)
-EXECUTABLES = $(patsubst $(TEST_DIR)/%.c, %, $(TEST_FILES))
+.DEFAULT_GOAL := config
 
-.DEFAULT_GOAL := clean
+config:
+	mkdir -p build
 
-$(TEST_DIR)/%.c: $(INCLUDE_DIR)/%.h 
-	$(CC) $(CFLAGS) -o $(EXECUTABLES) $^
+test: config
+	for f in $(TEST_DIR)/*.c; do \
+		$(CC) $(CFLAGS) -o $(BUILD_DIR)/`basename $$f .c` $$f; \
+	done
 
-%: $(TEST_DIR)/%.c 
-	$(CC) $(CFLAGS) -o $@ $^
-	./$@
+example: config
+	for f in $(EXAMPLES_DIR)/*.c; do \
+		$(CC) $(CFLAGS) -o $(BUILD_DIR)/`basename $$f .c` $$f; \
+	done
 
-example:
-	$(CC) ./examples/$(NAME).c $(CFLAGS) -o $(NAME)_example
-	./$(NAME)_example
+build: test example
 
-debug:
-	$(CC) $(CFLAGS) -o $(NAME) ./test/$(NAME).c
-	gdb $(NAME)
+gdb:
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$(NAME) ./test/$(NAME).c
+	gdb $(BUILD_DIR)/$(NAME)
 
 clean:
-	rm -f $(EXECUTABLES)
-	rm -f *_example
+	rm -f build/*
 
-.PHONY: message 
-message:
-	@echo "CC = $(CC)"
-	@echo "CFLAGS = $(CFLAGS)"
-	@echo "TEST_DIR = $(TEST_DIR)" 
-	@echo "INCLUDE_DIR = $(INCLUDE_DIR)"
-	@echo "TEST_FILES = $(TEST_FILES)"
-	@echo "EXECUTABLES = $(EXECUTABLES)"
-
+.PHONY: message clean gdb
