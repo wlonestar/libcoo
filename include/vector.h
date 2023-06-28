@@ -98,7 +98,10 @@ static void vector_reserve(struct vector *self, size_t new_cap) {
   size_t old_cap = self->_capacity;
   self->_capacity = new_cap;
   int *old = malloc(sizeof(int) * old_cap);
-  memcpy(old, self->_data, old_cap);
+  // memcpy(old, self->_data, old_cap);
+  for (size_t i = 0; i < old_cap; i++) {
+    old[i] = self->_data[i];
+  }
   self->_data = (int *)realloc(self->_data, sizeof(int) * self->_capacity);
   assert(self->_capacity >= self->_size);
   assert(old_cap >= self->_size);
@@ -138,20 +141,27 @@ static void vector_clear(struct vector *self) {
 }
 
 static int *vector_insert(struct vector *self, int *pos, int value) {
-  int *end = self->end(self);
-  for (int *i = end; i != (pos - 1); i--) {
-    int t = *(i - 1);
-    *i = t;
+  if (self->_size + 1 > self->_capacity) {
+    self->reserve(self, self->_size + 5);
   }
-  *(pos - 1) = value;
+  int *ret = pos;
+  int *end = self->end(self);
+  for (int *i = end; i != pos - 1; i--) {
+    int val = *(i - 1);
+    *i = val;
+  }
+  *pos = value;
   self->_size++;
-  return (pos - 1);
+  return ret;
 }
 
 static int *vector_insert_n(struct vector *self, int *pos, size_t count,
                             int value) {
   if (count == 0) {
     return pos;
+  }
+  if (self->_size + count > self->_capacity) {
+    self->reserve(self, self->_size + count + 5);
   }
   int *ret = pos;
   for (size_t i = 0; i < count; i++) {
@@ -164,6 +174,9 @@ static int *vector_insert_range(struct vector *self, int *pos, int *first,
                                 int *last) {
   if (first == last) {
     return pos;
+  }
+  if (self->_size + last - first > self->_capacity) {
+    self->reserve(self, self->_size + last - first + 5);
   }
   int *ret = pos;
   for (int *i = first; i != last; i++) {

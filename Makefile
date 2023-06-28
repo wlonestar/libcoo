@@ -5,7 +5,7 @@ TEST_DIR = test
 EXAMPLES_DIR = examples
 BUILD_DIR = build
 
-.DEFAULT_GOAL := config
+.DEFAULT_GOAL := build
 
 config:
 	mkdir -p build

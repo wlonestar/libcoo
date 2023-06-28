@@ -212,10 +212,30 @@ void test_vector_erase_range() {
   }
 }
 
+void test_vector_insert() {
+  {
+    vector *v = init_vector_n(100, 0);
+    int val = 1;
+    int *i = v->insert(v, v->begin(v) + 10, val);
+    assert(v->size(v) == 101);
+    assert(i = v->begin(v) + 10);
+    int j;
+    for ( j = 0; j < 10; j++) {
+      assert(v->at(v, j) == 0);
+    }
+    assert(v->at(v, j++) == 1);
+    for (; j < 101; j ++) {
+      assert(v->at(v, j) == 0);
+    }
+    free_vector(v);
+  }
+}
+
 void test_vector_modifiers() {
   test_vector_clear();
   test_vector_erase();
   test_vector_erase_range();
+  test_vector_insert();
 }
 
 int main() {

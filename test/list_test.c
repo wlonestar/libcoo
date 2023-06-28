@@ -20,7 +20,7 @@ void test_list_empty() {
   assert(!c->empty(c));
   c->clear(c);
   assert(c->empty(c));
-  FREE_LIST(c);
+  FREE_LIST(list, c);
 }
 
 void test_list_resize() {
@@ -28,16 +28,19 @@ void test_list_resize() {
     CREATE_LIST_N(list, l, 10, 0);
     l->resize(l, 5);
     assert(l->size(l) == 5);
+    FREE_LIST(list, l);
   }
   {
     CREATE_LIST_N(list, l, 10, 0);
     l->resize(l, 20);
     assert(l->size(l) == 20);
+    FREE_LIST(list, l);
   }
   {
     CREATE_LIST_N(list, l, 5, 2);
     l->resize(l, 2);
     assert(l->size(l) == 2);
+    FREE_LIST(list, l);
   }
   {
     CREATE_LIST_N(list, l, 5, 2);
@@ -45,6 +48,7 @@ void test_list_resize() {
     assert(l->size(l) == 10);
     assert(l->front(l) == 2);
     assert(l->back(l) == 0);
+    FREE_LIST(list, l);
   }
 }
 
@@ -63,6 +67,7 @@ void test_list_size() {
   assert(c->size(c) == 1);
   c->erase(c, c->begin(c));
   assert(c->size(c) == 0);
+  FREE_LIST(list, c);
 }
 
 void test_list_capacity() {
@@ -76,6 +81,7 @@ void test_list_clear() {
   CREATE_LIST_ARRAY(list, c, a, a + 3);
   c->clear(c);
   assert(c->empty(c));
+  FREE_LIST(list, c);
 }
 
 void test_list_insert() {
@@ -115,6 +121,7 @@ void test_list_insert() {
     i = i->next;
     assert(i->data == 1);
     i = i->next;
+    FREE_LIST(list, d);
   }
   {
     int a1[] = {1, 2, 3};
@@ -143,6 +150,7 @@ void test_list_insert() {
     assert(i->data == 6);
     i = i->next;
     assert(i->data == 3);
+    FREE_LIST(list, l);
   }
 }
 
@@ -156,6 +164,7 @@ void test_list_pop_back() {
   assert(c->front(c) == 1);
   c->pop_back(c);
   assert(c->empty(c));
+  FREE_LIST(list, c);
 }
 
 void test_list_pop_front() {
@@ -168,6 +177,7 @@ void test_list_pop_front() {
   assert(c->front(c) == 1);
   c->pop_back(c);
   assert(c->empty(c));
+  FREE_LIST(list, c);
 }
 
 void test_list_push_back() {
@@ -177,6 +187,7 @@ void test_list_push_back() {
   }
   int a[] = {0, 1, 2, 3, 4};
   assert_list(c, a, a + 5);
+  FREE_LIST(list, c);
 }
 
 void test_list_push_front() {
@@ -186,6 +197,7 @@ void test_list_push_front() {
   }
   int a[] = {4, 3, 2, 1, 0};
   assert_list(c, a, a + 5);
+  FREE_LIST(list, c);
 }
 
 void test_list_modifiers() {
@@ -206,6 +218,8 @@ void test_list_merge() {
   c1->merge(c1, c2);
   assert_list(c1, a3, a3 + 12);
   assert(c2->empty(c2));
+  FREE_LIST(list, c1);
+  FREE_LIST(list, c2);
 }
 
 bool greater(int a, int b) { return a >= b; }
@@ -219,6 +233,8 @@ void test_list_merge_by() {
   c1->merge_by(c1, c2, greater);
   assert_list(c1, a3, a3 + 12);
   assert(c2->empty(c2));
+  FREE_LIST(list, c1);
+  FREE_LIST(list, c2);
 }
 
 void test_list_remove() {
@@ -228,6 +244,7 @@ void test_list_remove() {
   assert(c->remove(c, 3) == 1);
   c->remove(c, 3);
   assert_list(c, a2, a2 + 3);
+  FREE_LIST(list, c);
 }
 
 bool pred(int n) { return n < 3; }
@@ -239,6 +256,7 @@ void test_list_remove_if() {
   assert(c->remove_if(c, pred) == 2);
   c->remove_if(c, pred);
   assert_list(c, a2, a2 + 2);
+  FREE_LIST(list, c);
 }
 
 void test_list_reverse() {
@@ -247,6 +265,7 @@ void test_list_reverse() {
   CREATE_LIST_ARRAY(list, c, a1, a1 + 12);
   c->reverse(c);
   assert_list(c, a2, a2 + 12);
+  FREE_LIST(list, c);
 }
 
 void test_list_sort() {
@@ -255,6 +274,7 @@ void test_list_sort() {
   CREATE_LIST_ARRAY(list, c, a1, a1 + 12);
   c->sort(c);
   assert_list(c, a2, a2 + 12);
+  FREE_LIST(list, c);
 }
 
 void test_list_sort_by() {
@@ -263,6 +283,7 @@ void test_list_sort_by() {
   CREATE_LIST_ARRAY(list, c, a1, a1 + 12);
   c->sort_by(c, greater);
   assert_list(c, a2, a2 + 12);
+  FREE_LIST(list, c);
 }
 
 void test_list_splice() {
@@ -274,6 +295,8 @@ void test_list_splice() {
     l1->splice(l1, l1->end(l1), l2);
     assert(l1->size(l1) == 0);
     assert(l2->size(l2) == 0);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST(list, l1);
@@ -283,6 +306,8 @@ void test_list_splice() {
     assert(l2->size(l2) == 0);
     list_node *i = l1->begin(l1);
     assert(i->data == 4);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST(list, l1);
@@ -294,6 +319,8 @@ void test_list_splice() {
     assert(i->data == 4);
     i = i->next;
     assert(i->data == 5);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST(list, l1);
@@ -307,6 +334,8 @@ void test_list_splice() {
     assert(i->data == 5);
     i = i->next;
     assert(i->data == 6);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
@@ -316,6 +345,8 @@ void test_list_splice() {
     assert(l2->size(l2) == 0);
     list_node *i = l1->begin(l1);
     assert(i->data == 1);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
@@ -325,6 +356,8 @@ void test_list_splice() {
     assert(l2->size(l2) == 0);
     list_node *i = l1->begin(l1);
     assert(i->data == 1);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
@@ -336,6 +369,8 @@ void test_list_splice() {
     assert(i->data == 4);
     i = i->next;
     assert(i->data == 1);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
@@ -347,6 +382,8 @@ void test_list_splice() {
     assert(i->data == 1);
     i = i->next;
     assert(i->data == 4);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
@@ -360,6 +397,8 @@ void test_list_splice() {
     assert(i->data == 5);
     i = i->next;
     assert(i->data == 1);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
@@ -373,6 +412,8 @@ void test_list_splice() {
     assert(i->data == 4);
     i = i->next;
     assert(i->data == 5);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
@@ -388,6 +429,8 @@ void test_list_splice() {
     assert(i->data == 6);
     i = i->next;
     assert(i->data == 1);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
@@ -403,6 +446,8 @@ void test_list_splice() {
     assert(i->data == 5);
     i = i->next;
     assert(i->data == 6);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 2);
@@ -416,6 +461,8 @@ void test_list_splice() {
     assert(i->data == 1);
     i = i->next;
     assert(i->data == 2);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 2);
@@ -429,6 +476,8 @@ void test_list_splice() {
     assert(i->data == 4);
     i = i->next;
     assert(i->data == 2);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
 }
 
@@ -443,6 +492,8 @@ void test_list_splice_from() {
     assert(l2->size(l2) == 0);
     list_node *i = l1->begin(l1);
     assert(i->data == 4);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST(list, l1);
@@ -454,6 +505,8 @@ void test_list_splice_from() {
     assert(i->data == 4);
     i = l2->begin(l2);
     assert(i->data == 5);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST(list, l1);
@@ -465,6 +518,8 @@ void test_list_splice_from() {
     assert(i->data == 5);
     i = l2->begin(l2);
     assert(i->data == 4);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST(list, l1);
@@ -478,6 +533,8 @@ void test_list_splice_from() {
     assert(i->data == 5);
     i = i->next;
     assert(i->data == 6);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST(list, l1);
@@ -491,6 +548,8 @@ void test_list_splice_from() {
     assert(i->data == 4);
     i = i->next;
     assert(i->data == 6);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
@@ -498,6 +557,7 @@ void test_list_splice_from() {
     assert(l1->size(l1) == 1);
     list_node *i = l1->begin(l1);
     assert(i->data == 1);
+    FREE_LIST(list, l1);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
@@ -509,6 +569,8 @@ void test_list_splice_from() {
     assert(i->data == 4);
     i = i->next;
     assert(i->data == 1);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 1);
@@ -520,6 +582,8 @@ void test_list_splice_from() {
     assert(i->data == 1);
     i = i->next;
     assert(i->data == 4);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 2);
@@ -529,6 +593,7 @@ void test_list_splice_from() {
     assert(i->data == 1);
     i = i->next;
     assert(i->data == 2);
+    FREE_LIST(list, l1);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 2);
@@ -538,6 +603,7 @@ void test_list_splice_from() {
     assert(i->data == 2);
     i = i->next;
     assert(i->data == 1);
+    FREE_LIST(list, l1);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 2);
@@ -547,6 +613,7 @@ void test_list_splice_from() {
     assert(i->data == 1);
     i = i->next;
     assert(i->data == 2);
+    FREE_LIST(list, l1);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 2);
@@ -556,6 +623,7 @@ void test_list_splice_from() {
     assert(i->data == 1);
     i = i->next;
     assert(i->data == 2);
+    FREE_LIST(list, l1);
   }
 }
 
@@ -573,6 +641,7 @@ void test_list_splice_range() {
     assert(i->data == 2);
     i = i->next;
     assert(i->data == 3);
+    FREE_LIST(list, l1);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 3);
@@ -585,6 +654,7 @@ void test_list_splice_range() {
     assert(i->data == 1);
     i = i->next;
     assert(i->data == 3);
+    FREE_LIST(list, l1);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 3);
@@ -597,6 +667,7 @@ void test_list_splice_range() {
     assert(i->data == 3);
     i = i->next;
     assert(i->data == 1);
+    FREE_LIST(list, l1);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 3);
@@ -616,6 +687,8 @@ void test_list_splice_range() {
     assert(l2->size(l2) == 1);
     i = l2->begin(l2);
     assert(i->data == 4);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 3);
@@ -636,6 +709,8 @@ void test_list_splice_range() {
     assert(l2->size(l2) == 1);
     i = l2->begin(l2);
     assert(i->data == 4);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
   {
     CREATE_LIST_ARRAY(list, l1, a1, a1 + 3);
@@ -655,6 +730,8 @@ void test_list_splice_range() {
     assert(l2->size(l2) == 1);
     i = l2->begin(l2);
     assert(i->data == 4);
+    FREE_LIST(list, l1);
+    FREE_LIST(list, l2);
   }
 }
 
@@ -664,6 +741,7 @@ void test_list_unique() {
   CREATE_LIST_ARRAY(list, c, a1, a1 + 9);
   assert(c->unique(c) == 5);
   assert_list(c, a2, a2 + 4);
+  FREE_LIST(list, c);
 }
 
 bool equal(int a, int b) { return a == b; }
@@ -674,6 +752,7 @@ void test_list_unique_by() {
   CREATE_LIST_ARRAY(list, c, a1, a1 + 9);
   assert(c->unique_by(c, equal) == 5);
   assert_list(c, a2, a2 + 4);
+  FREE_LIST(list, c);
 }
 
 void test_list_operations() {
@@ -704,6 +783,8 @@ void test_list_swap() {
     assert_list(c2, a1, a1 + 5);
     assert(it1 == c2->begin(c2)); // Iterators remain valid
     assert(it2 == c1->begin(c1)); // Iterators remain valid
+    FREE_LIST(list, c1);
+    FREE_LIST(list, c2);
   }
   {
     int a2[] = {0, 2, 4, 5, 6, 8, 11};
@@ -712,6 +793,8 @@ void test_list_swap() {
     c1->swap(c1, c2);
     assert_list(c1, a2, a2 + 7);
     assert(c2->empty(c2));
+    FREE_LIST(list, c1);
+    FREE_LIST(list, c2);
   }
   {
     int a1[] = {1, 3, 7, 9, 10};
@@ -720,6 +803,8 @@ void test_list_swap() {
     c1->swap(c1, c2);
     assert(c1->empty(c1));
     assert_list(c2, a1, a1 + 5);
+    FREE_LIST(list, c1);
+    FREE_LIST(list, c2);
   }
   {
     CREATE_LIST(list, c1);
@@ -727,8 +812,8 @@ void test_list_swap() {
     c1->swap(c1, c2);
     assert(c1->empty(c1));
     assert(c2->empty(c2));
-    FREE_LIST(c1);
-    FREE_LIST(c2);
+    FREE_LIST(list, c1);
+    FREE_LIST(list, c2);
   }
 }
 
