@@ -50,21 +50,21 @@
     obj->swap = _queue_##queue##_swap;                                         \
     obj->print = _queue_##queue##_print;                                       \
   }                                                                            \
-  static struct queue *_queue##queue##_init_queue() {                          \
+  static struct queue *_queue_##queue##_init_queue() {                          \
     struct queue *obj = (struct queue *)malloc(sizeof(struct queue));          \
     CREATE_LIST(_queue_##queue##_container, con);                              \
     obj->c = con;                                                              \
     _queue_##queue##_assign_method(obj);                                       \
     return obj;                                                                \
   }                                                                            \
-  static struct queue *_queue##queue##_init_queue_n(size_t count, T value) {   \
+  static struct queue *_queue_##queue##_init_queue_n(size_t count, T value) {   \
     struct queue *obj = (struct queue *)malloc(sizeof(struct queue));          \
     CREATE_LIST_N(_queue_##queue##_container, con, count, value);              \
     obj->c = con;                                                              \
     _queue_##queue##_assign_method(obj);                                       \
     return obj;                                                                \
   }                                                                            \
-  static struct queue *_queue##queue##_init_queue_array(T *begin, T *end) {    \
+  static struct queue *_queue_##queue##_init_queue_array(T *begin, T *end) {    \
     struct queue *obj = (struct queue *)malloc(sizeof(struct queue));          \
     CREATE_LIST_ARRAY(_queue_##queue##_container, con, begin, end);            \
     obj->c = con;                                                              \
@@ -76,13 +76,13 @@
     free(self);                                                                \
   }
 
-#define CREATE_QUEUE(queue, obj) queue *obj = _queue##queue##_init_queue();
+#define CREATE_QUEUE(queue, obj) queue *obj = _queue_##queue##_init_queue();
 
 #define CREATE_QUEUE_N(queue, obj, n, val)                                     \
-  queue *obj = _queue##queue##_init_queue_n(n, val);
+  queue *obj = _queue_##queue##_init_queue_n(n, val);
 
 #define CREATE_QUEUE_ARRAY(queue, obj, begin, end)                             \
-  queue *obj = _queue##queue##_init_queue_array(begin, end);
+  queue *obj = _queue_##queue##_init_queue_array(begin, end);
 
 #define FREE_QUEUE(queue, obj) _queue_##queue##_free_queue(obj);
 

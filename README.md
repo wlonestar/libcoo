@@ -4,7 +4,9 @@
 
 - [x] list
 
-- [ ] stack
+- [x] stack
+
+- [x] queue
 
 ## Usage
 
