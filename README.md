@@ -1,8 +1,12 @@
 # generic containers in C
 
+- [x] vector
+
 - [x] list
 
-- [ ] stack
+- [x] stack
+
+- [x] queue
 
 ## Usage
 

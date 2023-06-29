@@ -1,155 +1,135 @@
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
-
 #include "stack.h"
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-/**
- * int stack
- */
+DECLARE_STACK(stack, int)
 
-DECLARE_STACK(int_stack, int)
-
-static void int_stack_print(int_stack *self) {
-  for (int i = 0; i < self->size(self); i++) {
-    printf("%d ", self->data[i]);
+void test_stack_ctor() {
+  {
+    int a[] = {0, 1, 2, 3, 4};
+    CREATE_STACK_ARRAY(stack, q, a, a + 5);
+    assert(q->size(q) == 5);
+    int i = 4;
+    while (!q->empty(q)) {
+      assert(q->top(q) == a[i]);
+      q->pop(q);
+      i--;
+    }
+    FREE_STACK(stack, q);
   }
-  printf("\n");
+  {
+    CREATE_STACK(stack, q);
+    assert(q->size(q) == 0);
+    q->push(q, 1);
+    assert(q->size(q) == 1);
+    assert(q->top(q) == 1);
+    q->push(q, 2);
+    assert(q->size(q) == 2);
+    assert(q->top(q) == 2);
+    FREE_STACK(stack, q);
+  }
+  {
+    int a[] = {4, 3, 2, 1};
+    CREATE_STACK_ARRAY(stack, q, a, a + 4)
+    assert(q->top(q) == 1);
+    q->pop(q);
+    assert(q->top(q) == 2);
+    q->pop(q);
+    assert(q->top(q) == 3);
+    q->pop(q);
+    assert(q->top(q) == 4);
+    q->pop(q);
+    assert(q->empty(q));
+    FREE_STACK(stack, q);
+  }
 }
 
-void test_int_stack(int_stack *stk) {
-  assert(stk->empty(stk) == true);
-  for (int i = 0; i < 10; i++) {
-    stk->push(stk, i);
-    assert(stk->top(stk) == i);
-  }
-  assert(stk->size(stk) == 10);
-  stk->print(stk);
-  for (int i = 0; i < 10; i++) {
-    assert(stk->top(stk) == 9 - i);
-    stk->pop(stk);
-  }
-  assert(stk->size(stk) == 0);
+void test_stack_cons() { test_stack_ctor(); }
+
+void test_stack_top() {
+  CREATE_STACK(stack, q);
+  assert(q->size(q) == 0);
+  q->push(q, 1);
+  q->push(q, 2);
+  q->push(q, 3);
+  int val = q->top(q);
+  assert(val == 3);
+  FREE_STACK(stack, q);
 }
 
-/**
- * float stack
- */
-
-DECLARE_STACK(float_stack, float)
-
-static void float_stack_print(float_stack *self) {
-  for (int i = 0; i < self->size(self); i++) {
-    printf("%f ", self->data[i]);
-  }
-  printf("\n");
+void test_stack_empty() {
+  CREATE_STACK(stack, q);
+  assert(q->empty(q));
+  q->push(q, 1);
+  assert(!q->empty(q));
+  q->pop(q);
+  assert(q->empty(q));
+  FREE_STACK(stack, q);
 }
 
-void test_float_stack(float_stack *stk) {
-  assert(stk->empty(stk) == true);
-  for (int i = 0; i < 10; i++) {
-    stk->push(stk, i);
-    assert(stk->top(stk) == i);
-  }
-  assert(stk->size(stk) == 10);
-  stk->print(stk);
-  for (int i = 0; i < 10; i++) {
-    assert(stk->top(stk) == 9 - i);
-    stk->pop(stk);
-  }
-  assert(stk->size(stk) == 0);
+void test_stack_size() {
+  CREATE_STACK(stack, q);
+  assert(q->size(q) == 0);
+  q->push(q, 1);
+  assert(q->size(q) == 1);
+  FREE_STACK(stack, q);
 }
 
-/**
- * string stack
- */
-
-DECLARE_STACK(string_stack, char *)
-
-static void string_stack_print(string_stack *self) {
-  for (int i = 0; i < self->size(self); i++) {
-    printf("%s ", self->data[i]);
-  }
-  printf("\n");
+void test_stack_push() {
+  CREATE_STACK(stack, q);
+  q->push(q, 1);
+  assert(q->size(q) == 1);
+  assert(q->top(q) == 1);
+  q->push(q, 2);
+  assert(q->size(q) == 2);
+  assert(q->top(q) == 2);
+  q->push(q, 3);
+  assert(q->size(q) == 3);
+  assert(q->top(q) == 3);
+  FREE_STACK(stack, q);
 }
 
-void test_string_stack(string_stack *stk) {
-  assert(stk->empty(stk) == true);
-  for (int i = 0; i < 10; i++) {
-    char *val = (char [2]) {'a' + i, '\0'};
-    char *tmp = malloc(sizeof(char) * 2);
-    strcpy(tmp, val);
-    stk->push(stk, tmp);
-    assert(stk->top(stk) == tmp);
-  }
-  assert(stk->size(stk) == 10);
-  stk->print(stk);
-  for (int i = 9; i >= 0; i--) {
-    char *val = (char [2]) {'a' + i, '\0'};
-    char *tmp = malloc(sizeof(char) * 2);
-    strcpy(tmp, val);
-    assert(strcmp(stk->top(stk), tmp) == 0);
-    stk->pop(stk);
-  }
-  assert(stk->size(stk) == 0);
+void test_stack_pop() {
+  CREATE_STACK(stack, q);
+  assert(q->size(q) == 0);
+  q->push(q, 1);
+  q->push(q, 2);
+  q->push(q, 3);
+  assert(q->size(q) == 3);
+  assert(q->top(q) == 3);
+  q->pop(q);
+  assert(q->size(q) == 2);
+  assert(q->top(q) == 2);
+  q->pop(q);
+  assert(q->size(q) == 1);
+  assert(q->top(q) == 1);
+  q->pop(q);
+  assert(q->size(q) == 0);
+  FREE_STACK(stack, q);
 }
 
-/**
- * struct stack
-*/
-
-typedef struct foo {
-  int bar;
-  float baz;
-} foo;
-
-DECLARE_STACK(foo_stack, foo)
-
-static void foo_stack_print(foo_stack *self) {
-  for (int i = 0; i < self->size(self); i++) {
-    printf("(%d %f) ", self->data[i].bar, self->data[i].baz);
-  }
-  printf("\n");
+void test_stack_swap() {
+  int a1[] = {0, 1, 2, 3, 4};
+  int a2[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+  CREATE_STACK_ARRAY(stack, q1, a1, a1 + 5);
+  CREATE_STACK_ARRAY(stack, q2, a2, a2 + 10);
+  q1->swap(q1, q2);
+  FREE_STACK(stack, q1);
+  FREE_STACK(stack, q2);
 }
 
-void test_foo_stack(foo_stack *stk) {
-  assert(stk->empty(stk) == true);
-  for (int i = 0; i < 10; i++) {
-    foo f = { .bar = i, .baz = i * 0.1f };
-    stk->push(stk, f);
-    assert(stk->top(stk).bar == f.bar && stk->top(stk).baz == f.baz);
-  }
-  assert(stk->size(stk) == 10);
-  stk->print(stk);
-  for (int i = 9; i >= 0; i--) {
-    assert(stk->top(stk).bar == i && stk->top(stk).baz == i * 0.1f);
-    stk->pop(stk);
-  }
-  assert(stk->size(stk) == 0);
+void test_stack_defn() {
+  test_stack_top();
+  test_stack_empty();
+  test_stack_size();
+  test_stack_push();
+  test_stack_pop();
+  test_stack_swap();
 }
 
 int main() {
-  CREATE_STACK(int_stack, stk1)
-  stk1->print = int_stack_print;
-
-  CREATE_STACK(float_stack, stk2)
-  stk2->print = float_stack_print;
-  
-  CREATE_STACK(string_stack, stk3)
-  stk3->print = string_stack_print;
-  
-  CREATE_STACK(foo_stack, stk4)
-  stk4->print = foo_stack_print;
-
-  test_int_stack(stk1);
-  test_float_stack(stk2);
-  test_string_stack(stk3);
-  test_foo_stack(stk4);
-
-  FREE_STACK(stk1)
-  FREE_STACK(stk2)
-  FREE_STACK(stk3)
-  FREE_STACK(stk4)
-
+  test_stack_cons();
+  test_stack_defn();
   return 0;
 }

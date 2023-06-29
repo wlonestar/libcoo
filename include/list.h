@@ -1,7 +1,8 @@
 #ifndef list_h
 #define list_h
 
-#include "alloc.h"
+#include <stdbool.h>
+#include <stddef.h>
 
 #define DECLARE_LIST(list, T)                                                  \
   typedef struct list##_node {                                                 \
@@ -158,13 +159,17 @@
     self->_size++;                                                             \
   }                                                                            \
   static void _list_##list##_pop_back(struct list *self) {                     \
-    self->_head->prev->prev->next = self->_head;                               \
-    self->_head->prev = self->_head->prev->prev;                               \
+    struct list##_node *removal = self->_head->prev;                           \
+    removal->prev->next = self->_head;                                         \
+    self->_head->prev = removal->prev;                                         \
+    free(removal);                                                             \
     self->_size--;                                                             \
   }                                                                            \
   static void _list_##list##_pop_front(struct list *self) {                    \
-    self->_head->next->next->prev = self->_head;                               \
-    self->_head->next = self->_head->next->next;                               \
+    struct list##_node *removal = self->_head->next;                           \
+    removal->next->prev = self->_head;                                         \
+    self->_head->next = removal->next;                                         \
+    free(removal);                                                             \
     self->_size--;                                                             \
   }                                                                            \
   static void _list_##list##_resize(struct list *self, size_t count) {         \
@@ -398,7 +403,6 @@
   }                                                                            \
   static void _list_##list##_list_init_head(struct list *obj) {                \
     obj->_head = (struct list##_node *)malloc(sizeof(struct list##_node));     \
-    /* obj->_head->data = -114514; */ /* for int type */                       \
     obj->_head->prev = obj->_head;                                             \
     obj->_head->next = obj->_head;                                             \
   }                                                                            \
@@ -436,11 +440,8 @@
     obj->sort_by = _list_##list##_sort_by;                                     \
     obj->print = _list_##list##_print;                                         \
   }                                                                            \
-  static struct list *_list_##list##_malloc_list() {                           \
-    return (struct list *)malloc(sizeof(struct list));                         \
-  }                                                                            \
   static struct list *_list_##list##_init_list() {                             \
-    struct list *obj = _list_##list##_malloc_list();                           \
+    struct list *obj = (struct list *)malloc(sizeof(struct list));             \
     _list_##list##_list_init_head(obj);                                        \
     obj->_size = 0;                                                            \
     _list_##list##_list_assignn_method(obj);                                   \
@@ -475,6 +476,6 @@
 #define CREATE_LIST_ARRAY(list, obj, begin, end)                               \
   list *obj = _list_##list##_init_list_array(begin, end);
 
-#define FREE_LIST(obj) _list_##list##_free_list(obj);
+#define FREE_LIST(list, obj) _list_##list##_free_list(obj);
 
 #endif
