@@ -1,5 +1,7 @@
 # generic containers in C
 
+- [x] vector
+
 - [x] list
 
 - [ ] stack
