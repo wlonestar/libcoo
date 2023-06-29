@@ -49,6 +49,7 @@ int main() {
     l->push_back(l, p);
   }
   l->print(l);
+  FREE_LIST(point_list, l)
 
   point2d **plist = (point2d **)malloc(sizeof(point2d *) * 9);
   for (int i = 0; i < 9; i++) {
@@ -60,6 +61,7 @@ int main() {
   CREATE_LIST_ARRAY(point_list, ll, plist, plist + 9)
   ll->print = point_list_print;
   ll->print(ll);
+  FREE_LIST(point_list, ll)
 
   CREATE_LIST(string_list, c);
   c->print = string_list_print;
@@ -67,11 +69,13 @@ int main() {
     c->push_back(c, "hello");
   }
   c->print(c);
+  FREE_LIST(string_list, c)
 
   float a[] = {1.1, 2.22, 3.333, 4.4444, 5.55555};
   CREATE_LIST_ARRAY(float_list, fl, a, a + 5);
   fl->print = float_list_print;
   fl->print(fl);
+  FREE_LIST(float_list, fl)
 
   return 0;
 }
