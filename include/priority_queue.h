@@ -104,11 +104,10 @@
   }                                                                            \
   static struct priority_queue *_pq_##priority_queue##_init_pq_array(T *begin, \
                                                                      T *end) { \
-    struct priority_queue *obj =                                               \
-        (struct priority_queue *)malloc(sizeof(struct priority_queue));        \
-    CREATE_VECTOR_ARRAY(_pq_##priority_queue##_container, con, begin, end);    \
-    obj->c = con;                                                              \
-    _pq_##priority_queue##_assign_method(obj);                                 \
+    struct priority_queue *obj = _pq_##priority_queue##_init_pq();             \
+    for (T *p = begin; p != end; p++) {                                        \
+      obj->push(obj, p[0]);                                                    \
+    }                                                                          \
     return obj;                                                                \
   }                                                                            \
   static void _pq_##priority_queue##_free_pq(struct priority_queue *self) {    \

@@ -8,7 +8,7 @@
 
 - [x] queue
 
-- [ ] priority_queue
+- [x] priority_queue
 
 ## Usage
 
