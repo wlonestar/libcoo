@@ -167,7 +167,7 @@ static int *vector_insert_n(struct vector *self, int *pos, size_t count,
   for (size_t i = 0; i < count; i++) {
     self->insert(self, pos, value);
   }
-  return (ret - 1);
+  return ret;
 }
 
 static int *vector_insert_range(struct vector *self, int *pos, int *first,
@@ -184,7 +184,7 @@ static int *vector_insert_range(struct vector *self, int *pos, int *first,
     pos = self->insert(self, pos, val);
     pos++;
   }
-  return (ret - 1);
+  return ret;
 }
 
 static int *vector_erase(struct vector *self, int *pos) {

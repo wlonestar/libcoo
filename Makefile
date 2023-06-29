@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -std=c11 -Wall -g -Iinclude -fsanitize=address
+CFLAGS = -std=c11 -Wall -g -Iinclude
 
 TEST_DIR = test
 EXAMPLES_DIR = examples

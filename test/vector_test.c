@@ -229,6 +229,123 @@ void test_vector_insert() {
     }
     free_vector(v);
   }
+  {
+    size_t n = 100;
+    vector *v = init_vector_n(n, 0);
+    v->reserve(v, n + 1);
+    int val = 1;
+    int *i = v->insert(v, v->begin(v) + n, val);
+    assert(v->size(v) == n + 1);
+    assert(i = v->begin(v) + n);
+    for (size_t i = 0; i < n; i++) {
+      assert(v->at(v, i) == 0);
+    }
+    assert(v->at(v, n) == val);
+    free_vector(v);
+  }
+}
+
+void test_vector_insert_n() {
+  {
+    vector *v = init_vector_n(100, 0);
+    int *i = v->insert_n(v, v->begin(v) + 10, 5, 1);
+    assert(v->size(v) == 105);
+    assert(i == v->begin(v) + 10);
+    int j;
+    for (j = 0; j < 10; j++) {
+      assert(v->at(v, j) == 0);
+    }
+    for (; j < 15; j++) {
+      assert(v->at(v, j) == 1);
+    }
+    for (++j; j < 105; j++) {
+      assert(v->at(v, j) == 0);
+    }
+  }
+  {
+    vector *v = init_vector_n(100, 0);
+    v->reserve(v, 128);
+    size_t sz = v->size(v);
+    int *i = v->insert_n(v, v->begin(v) + 10, 5, 1);
+    assert(v->size(v) == sz + 5);
+    assert(i == v->begin(v) + 10);
+    int j;
+    for (j = 0; j < 10; j++) {
+      assert(v->at(v, j) == 0);
+    }
+    for (; j < 15; j++) {
+      assert(v->at(v, j) == 1);
+    }
+    for (++j; j < v->size(v); j++) {
+      assert(v->at(v, j) == 0);
+    }
+  }
+}
+
+void test_vector_insert_range() {
+  {
+    vector *v = init_vector_n(100, 0);
+    int a[] = {1, 2, 3, 4, 5};
+    int N = 5;
+    int *i = v->insert_range(v, v->begin(v) + 10, a, a + N);
+    assert(v->size(v) == 100 + N);
+    assert(i == v->begin(v) + 10);
+    int j;
+    for (j = 0; j < 10; j++) {
+      assert(v->at(v, j) == 0);
+    }
+    for (int k = 0; k < N; ++j, ++k) {
+      assert(v->at(v, j) == a[k]);
+    }
+    for (; j < 105; j ++) {
+      assert(v->at(v, j) == 0);
+    }
+    free_vector(v);
+  }
+  {
+    vector *v = init_vector_n(100, 0);
+    while (v->size(v) < v->capacity(v)) {
+      v->push_back(v, 0);
+    }
+    size_t sz = v->size(v);
+    int a[] = {1, 2, 3, 4, 5};
+    int N = 5;
+    int *i = v->insert_range(v, v->begin(v) + 10, a, a + N);
+    assert(v->size(v) == sz + N);
+    assert(i == v->begin(v) + 10);
+    int j;
+    for (j = 0; j < 10; j++) {
+      assert(v->at(v, j) == 0);
+    }
+    for (int k = 0; k < N; ++j, ++k) {
+      assert(v->at(v, j) == a[k]);
+    }
+    for (; j < v->size(v); j ++) {
+      assert(v->at(v, j) == 0);
+    }
+    free_vector(v);
+  }
+  {
+    vector *v = init_vector_n(100, 0);
+    v->reserve(v, 128);
+    size_t sz = v->size(v);
+    int a[] = {1, 2, 3, 4, 5};
+    int N = 5;
+    int *i = v->insert_range(v, v->begin(v) + 10, a, a + N);
+    assert(v->size(v) == sz + N);
+    assert(i == v->begin(v) + 10);
+    int j;
+    for (j = 0; j < 10; j++) {
+      assert(v->at(v, j) == 0);
+    }
+    for (int k = 0; k < N; ++j, ++k) {
+      assert(v->at(v, j) == a[k]);
+    }
+    for (; j < v->size(v); j ++) {
+      assert(v->at(v, j) == 0);
+    }
+    free_vector(v);
+  }
 }
 
 void test_vector_modifiers() {
@@ -236,6 +353,8 @@ void test_vector_modifiers() {
   test_vector_erase();
   test_vector_erase_range();
   test_vector_insert();
+  test_vector_insert_n();
+  test_vector_insert_range();
 }
 
 int main() {
