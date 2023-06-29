@@ -36,7 +36,7 @@ int main() {
   for (int i = 0; i < 5; i++) {
     c->push(c, "hello");
   }
-  FREE_STACK(string_queue, c)
+  FREE_STACK(string_stack, c)
 
   float a[] = {1.1, 2.22, 3.333, 4.4444, 5.55555};
   CREATE_STACK_ARRAY(float_stack, fl, a, a + 5);

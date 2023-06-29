@@ -8,6 +8,8 @@
 
 - [x] queue
 
+- [ ] priority_queue
+
 ## Usage
 
 ### Just see example
