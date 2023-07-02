@@ -1,22 +1,30 @@
 #include "rbtree.h"
 #include <assert.h>
 
+bool greater(int a, int b) { return a > b; }
+
+void print_int(int v) { printf("%d", v); }
+
+DECLARE_RBTREE(rbtree, int, print_int)
+
 void test_insert() {
-  rbtree *t1 = rbtree_init_rbtree();
+  CREATE_RBTREE(rbtree, t1)
   for (int i = 0; i < 18; i++) {
     t1->insert(t1, i);
   }
   t1->print(t1);
-  rbtree *t2 = rbtree_init_rbtree_comp(greater);
+  FREE_RBTREE(rbtree, t1)
+  CREATE_RBTREE_COMP(rbtree, t2, greater)
   for (int i = 0; i < 12; i++) {
     t2->insert(t2, i);
   }
   t2->print(t2);
   t2->in_order(t2);
+  FREE_RBTREE(rbtree, t2)
 }
 
 void test_erase() {
-  rbtree *t = rbtree_init_rbtree();
+  CREATE_RBTREE(rbtree, t)
   for (int i = 0; i < 12; i++) {
     t->insert(t, i);
   }
@@ -37,10 +45,11 @@ void test_erase() {
   t->in_order(t);
   t->insert(t, 1);
   t->in_order(t);
+  FREE_RBTREE(rbtree, t)
 }
 
 void test_traverse() {
-  rbtree *t = rbtree_init_rbtree();
+  CREATE_RBTREE(rbtree, t)
   t->pre_order(t);
   t->in_order(t);
   t->post_order(t);
@@ -54,6 +63,7 @@ void test_traverse() {
   t->in_order(t);
   t->post_order(t);
   t->level_order(t);
+  FREE_RBTREE(rbtree, t)
 }
 
 int main() {
